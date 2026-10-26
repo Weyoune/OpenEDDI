@@ -30,6 +30,7 @@ with tempfile.TemporaryDirectory() as td:
  shutil.copytree(upstream/'docs/licenses',folder/'licenses')
  (folder/'build.json').write_text(json.dumps({'product':'OpenEDDI','version':version,'commit':revision,'platform':a.platform,'binary_sha256':digest(binary),'upstream':'b879d5be008739f69afef562fb4bce56f1bdc778'},indent=2)+'\n')
  if a.platform=='macos-arm64':subprocess.run(['codesign','--force','--deep','--sign','-',str(app)],check=True)
+ metadata=json.loads((folder/'build.json').read_text());metadata['binary_sha256']=digest(dest/binary.name);(folder/'build.json').write_text(json.dumps(metadata,indent=2)+'\n')
  archive(folder,name)
  if a.source:
   source=Path(td)/'source';source.mkdir()
@@ -40,8 +41,8 @@ with tempfile.TemporaryDirectory() as td:
   deps=source/'deps';deps.mkdir()
   mapping={'openbmh':upstream}
   for line in cache.splitlines():
-   if line.startswith('FETCHCONTENT_SOURCE_DIR_') and ':PATH=' in line:
-    key,value=line.split(':PATH=',1);value=value.strip()
+   if line.startswith('FETCHCONTENT_SOURCE_DIR_') and '=' in line:
+    key,value=line.split('=',1);key=key.split(':',1)[0];value=value.strip()
     if value:mapping[key.removeprefix('FETCHCONTENT_SOURCE_DIR_').lower()]=Path(value)
   for key in ['sdl2','miniz','lzma_sdk','nfd','rmlui','freetype','editor_json','editor_http','editor_images','editor_svg','editor_xml']:
    mapping.setdefault(key,build/'_deps'/(key+'-src'))
