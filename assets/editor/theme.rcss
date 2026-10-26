@@ -304,3 +304,8 @@ scrollbarhorizontal sliderbar:hover { background-color: var(--scrollbar-hover); 
 scrollbarhorizontal sliderarrowdec, scrollbarhorizontal sliderarrowinc { width: 0; }
 button:focus, input:focus, select:focus, textarea:focus { border-color: var(--focus); }
 .nav:focus { border-color: var(--focus); }
+
+/* Keep the source preview visible while the legacy conversion controls scroll. */
+.image-layout { align-items: flex-start; }
+.image-stage { height: 520dp; min-height: 0dp; }
+.image-controls { height: 520dp; overflow-y: auto; }

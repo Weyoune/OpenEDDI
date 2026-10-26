@@ -633,6 +633,9 @@ class EditorUi final : public Rml::EventListener {
         html += "</div>";
     }
     void name_field(std::string &body) {
+        if(table()=="players" && info_.value("legacy",false)) {
+            field(body,"/name/last",t("name"));return;
+        }
         if (selected_.value("name", Json()).is_object()) {
             if (selected_["name"].contains("first") || selected_["name"].contains("last")) {
                 field(body, "/name/first", t("first"));
@@ -1724,7 +1727,7 @@ class EditorUi final : public Rml::EventListener {
         if(info_.value("legacy",false))
             body += "<div class=\"form-field\"><label>"+t("fit")+"</label><select id=\"legacy-fit\"><option value=\"contain\">"+t("fit_contain")+"</option><option value=\"cover\">"+t("fit_cover")+"</option></select></div>"
                     "<div class=\"form-field\"><label>Dithering</label><select id=\"legacy-dither\"><option value=\"false\">"+t("no")+"</option><option value=\"true\">"+t("yes")+"</option></select></div>"
-                    "<p id=\"native-description\"></p><img id=\"native-preview\" style=\"width:180dp;height:180dp;object-fit:contain;\"/>"
+                    "<p id=\"native-description\"></p><img id=\"native-preview\" style=\"width:180dp;height:180dp;\"/>"
                     "<div class=\"form-field\"><label>"+t("shared_confirm")+"</label><select id=\"legacy-confirm\"><option value=\"false\">"+t("no")+"</option><option value=\"true\">"+t("yes")+"</option></select></div>";
         body += button("image-preview", t("preview")) + button("image-reset", t("reset"), "quiet") +
                 "</div></div><p class=\"form-help\">" + t("crop_hint") + "</p>";

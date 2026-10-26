@@ -132,6 +132,8 @@ World World::open(const fs::path &source, const std::string &start_date) {
   for (auto &[name, bytes] : docs)
     w.store->set(name, std::make_shared<const std::string>(std::move(bytes)));
   w.manifest = parse(w.store->read("manifest.json"), "manifest.json");
+  w.manifest["title"] = {{"default", str(w.legacy_doc->metadata(), "edition") +
+                                         " · " + utf8(folder.filename())}};
   w.source_path = input;
   w.imported = true;
   w.load();

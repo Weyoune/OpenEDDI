@@ -256,6 +256,15 @@ Json Session::apply(const Json &args, std::vector<FileDelta> files,
           {"competitions", id, *w.find("competitions", id), after});
   }
   if (w.legacy_doc)
+    for (auto &d : transaction.changes)
+      if (d.table == "players" && d.after) {
+        auto &name = (*d.after)["name"];
+        const auto first = str(name, "first"), last = str(name, "last");
+        if (!first.empty())
+          name = {{"first", ""},
+                  {"last", first + (last.empty() ? "" : " ") + last}};
+      }
+  if (w.legacy_doc)
     for (const auto &d : transaction.changes)
       w.legacy_doc->validate_change(d.table, d.before, d.after);
   if (transaction.changes.empty() && transaction.files.empty())
