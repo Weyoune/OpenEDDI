@@ -16,6 +16,9 @@ with tempfile.TemporaryDirectory() as td:
  elif a.platform=='windows-x64':binary=root/'OpenEDDI.exe'
  else:binary=root/'OpenEDDI'
  binary.chmod(0o755)
+ if a.platform=='windows-x64':
+  imports=subprocess.check_output(['dumpbin','/DEPENDENTS',str(binary)],text=True).upper()
+  assert 'MSVCP140' not in imports and 'VCRUNTIME140' not in imports,'Unexpected redistributable runtime dependency'
  assert hashlib.sha256(binary.read_bytes()).hexdigest()==meta['binary_sha256']
  version=subprocess.run([str(binary),'--version'],cwd=tmp,capture_output=True,text=True,timeout=15)
  assert version.returncode==0 and 'OpenEDDI 0.1.0' in version.stdout
