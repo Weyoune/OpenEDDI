@@ -1,0 +1,5 @@
+/build*/
+/.openeddi/
+*.obw
+*.fbm
+__pycache__/
