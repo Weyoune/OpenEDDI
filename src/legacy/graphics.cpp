@@ -447,6 +447,14 @@ void Graphics::capture(World &world) {
     }
   }
   for (auto &[key, slot] : slots_) {
+    if (auto *asset = world.find("assets", key)) {
+      (*asset)["width"] = slot.width;
+      (*asset)["height"] = slot.height;
+      std::string caption = slot.file;
+      if (!slot.whole)
+        caption += " · " + key.substr(key.find(':') + 1);
+      (*asset)["name"] = {{"default", caption}};
+    }
     for (const auto &club : world.rows("clubs"))
       if (str(club, "crest") == key)
         slot.usages.push_back(

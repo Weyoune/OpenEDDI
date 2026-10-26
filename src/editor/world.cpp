@@ -273,6 +273,21 @@ Json World::query(const Json &args) const {
   const auto search = folded(str(args, "search")), nation = str(args, "nation"),
              comp = str(args, "competition"), team = str(args, "team");
   for (const auto &row : rows(name)) {
+    if (name == "assets") {
+      bool image = false;
+      const auto files = row.value("files", Json::object());
+      for (const auto &file : files.items()) {
+        if (!file.value().is_string())
+          continue;
+        const auto extension =
+            folded(utf8(path(file.value().get<std::string>()).extension()));
+        if (extension == ".png" || extension == ".jpg" ||
+            extension == ".jpeg" || extension == ".webp" || extension == ".svg")
+          image = true;
+      }
+      if (!image)
+        continue;
+    }
     const Json *club = name == "clubs" ? &row
                                        : (clubs.contains(str(row, "team"))
                                               ? clubs[str(row, "team")]

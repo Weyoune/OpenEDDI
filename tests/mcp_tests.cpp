@@ -42,6 +42,14 @@ int main() {
     Options options;
     if (options.mcp_port != 8766)
       throw std::runtime_error("wrong port");
+    World catalog = World::blank();
+    catalog.rows("assets") = Json::array(
+        {{{"key", "asset:audio"}, {"files", {{"native", "sound.abk"}}}},
+         {{"key", "asset:image"}, {"files", {{"native", "image.png"}}}}});
+    const auto images = catalog.query({{"table", "assets"}});
+    if (images["items"].size() != 1 ||
+        images["items"][0]["key"] != "asset:image")
+      throw std::runtime_error("non-images in graphics catalogue");
     std::cout << "MCP legacy protocol passed\n";
     return 0;
   } catch (const std::exception &e) {
