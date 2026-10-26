@@ -3,6 +3,7 @@
 #include "formats/executable_layout.hpp"
 #include "formats/le.hpp"
 #include "legacy/graphics.hpp"
+#include "legacy/exe_profile.hpp"
 #include <algorithm>
 #include <cctype>
 #include <iostream>
@@ -28,6 +29,53 @@ std::string bytes(std::initializer_list<int> values) {
   for (auto v : values)
     out += char(v);
   return out;
+}
+std::string regional_executable() {
+  // Entirely synthetic LE: one loaded code page, zero-filled data object, no
+  // fixups. Only the small routing guards are meaningful machine instructions.
+  std::string raw(602527, '\0');
+  const auto put = [&](size_t at, uint32_t value, size_t count = 4) {
+    for (size_t i = 0; i < count; ++i) raw.at(at + i) = char(value >> (i * 8));
+  };
+  raw.replace(0, 2, "MZ"); put(0x3c, 0x80); raw.replace(0x80, 2, "LE");
+  put(0x80 + 0x14, 1); put(0x80 + 0x28, 4096); put(0x80 + 0x2c, 4096);
+  put(0x80 + 0x40, 0xb0); put(0x80 + 0x44, 2); put(0x80 + 0x48, 0xe0);
+  put(0x80 + 0x68, 0x100); put(0x80 + 0x6c, 0x110); put(0x80 + 0x80, 0x1ac00);
+  put(0x130, 4096); put(0x134, 0x10000); put(0x138, 0x2045); put(0x13c, 1); put(0x140, 1);
+  put(0x148, 0x21000); put(0x14c, 0xa0000); put(0x150, 0x2043); put(0x154, 2);
+  raw.at(0x162) = 1;
+  const auto instruction = [&](size_t at, std::initializer_list<int> values) {
+    for (auto value : values) raw.at(at++) = char(value);
+  };
+  instruction(0x1ac5f, {0x66, 0x81, 0xfb, 0xff, 0x0f}); // Sentinel comparison.
+  instruction(0x1ac64, {0x0f, 0x84, 0x9b, 0, 0, 0}); // Sentinel fallback.
+  instruction(0x1ac6a, {0x66, 0x83, 0xfb, 0x5a});
+  instruction(0x1ac6e, {0x7c, 0x19});
+  instruction(0x1ac70, {0x66, 0x81, 0xfb, 0x5a, 0}); // Regional threshold.
+  instruction(0x1ac75, {0x7c, 0x07});
+  instruction(0x1ac77, {0x66, 0x81, 0xfb, 0xa8, 0});
+  instruction(0x1ac7c, {0x7c, 0x0b});
+  instruction(0x1ac7e, {0x66, 0x81, 0xfb, 0x65, 0x01});
+  instruction(0x1ac83, {0x0f, 0x8c, 0x7c, 0, 0, 0});
+  instruction(0x1ac89, {0x0f, 0xbf, 0xc3});
+  return raw;
+}
+void executable_profile_tests() {
+  const auto regional = regional_executable();
+  check(has_regional_crest_routing(regional), "Verified regional routing not recognized");
+  auto original = regional; original.at(0x1ac73) = char(138);
+  check(!has_regional_crest_routing(original), "Original fallback classified as regional routing");
+  for (auto at : {size_t(0), size_t(0x3c), size_t(0x80), size_t(0xa8), size_t(0x100),
+                  size_t(0x134), size_t(0x13c), size_t(0x162), size_t(0x1ac63),
+                  size_t(0x1ac65), size_t(0x1ac6d), size_t(0x1ac6f), size_t(0x1ac74),
+                  size_t(0x1ac76), size_t(0x1ac7a), size_t(0x1ac7d), size_t(0x1ac81),
+                  size_t(0x1ac84), size_t(0x1ac8a)}) {
+    auto wrong = regional; wrong.at(at) ^= 1;
+    check(!has_regional_crest_routing(wrong), "Unverified header/routing variant recognized");
+  }
+  check(!has_regional_crest_routing(regional.substr(0, 507925)) &&
+            !has_regional_crest_routing("") && !has_regional_crest_routing(std::string(507925, '\0')),
+        "English, truncated or empty executable recognized as German regional patch");
 }
 std::string stream(int w, int h, const std::string &rle,
                    const std::string &suffix = {}) {
@@ -432,13 +480,53 @@ void integration_tests() {
   check(g3.info("asset:club/90/crest").value("requires_confirmation", false),
         "single fallback alias lacks shared confirmation");
 }
+void regional_projection_tests() {
+  Fixture f;
+  // Upstream deliberately imports these as the original shared fallback.
+  f.club(137, 3);
+  f.club(168, 4);
+  f.world.store->set("assets/classic/resources.json",
+                    std::make_shared<const std::string>(f.resources.dump()));
+  const auto key = "asset:club/90/crest";
+  const auto fallback_png = f.world.store->read(f.world.asset_file(key));
+  const auto fallback_pixels = f.world.store->read("assets/classic/images/crests/90.pixels");
+  const auto far_png = f.world.store->read(f.world.asset_file("asset:club/168/crest"));
+  const auto raw = regional_executable();
+  write_atomic(f.root / "BMH.EXE", raw);
+  Graphics g(f.root);
+  g.capture(f.world);
+  check(!g.info(key).value("shared_fallback", true) &&
+            !g.info("asset:club/137/crest").value("shared_fallback", true),
+        "Recognized regional crest still uses computer fallback");
+  check(g.info("asset:club/168/crest").value("shared_fallback", false) &&
+            f.world.store->read(f.world.asset_file("asset:club/168/crest")) == far_png,
+        "Far-foreign fallback was changed by regional recognition");
+  check(f.world.store->read(f.world.asset_file(key)) != fallback_png &&
+            f.world.store->read("assets/classic/images/crests/90.pixels") != fallback_pixels,
+        "Regional cached PNG or indexed pixels were not refreshed");
+  const auto rgba = images::decode(f.world.store->read(f.world.asset_file(key)), ".png");
+  const auto &sheet = f.sheets.at("w/0");
+  const auto pixels = f.world.store->read("assets/classic/images/crests/90.pixels");
+  for (int y = 0; y < 38; ++y)
+    for (int x = 0; x < 38; ++x)
+      check(uint8_t(pixels[size_t(y) * 38 + x]) == sheet.pixels[size_t(y) * sheet.width + x],
+            "Regional slot was not extracted with the original packed stride");
+  check(rgba.pixels == convert_indexed(rgba, 38, 38, f.palette, true).pixels,
+        "Regional projection used the whole-sheet override palette");
+  check(g.prepare(f.world).empty() && read_file(f.root / "BMH.EXE") == raw,
+        "Read-only regional import schedules changes or patches its executable");
+  g.mark_saved(f.world);
+  check(g.prepare(f.world).empty(), "Regional baseline was not stable after save bookkeeping");
+}
 } // namespace
 int main() {
   try {
     rle_tests();
+    executable_profile_tests();
     conversion_tests();
     embedded_tests();
     integration_tests();
+    regional_projection_tests();
     std::cout << "graphics tests passed\n";
     return 0;
   } catch (const std::exception &e) {

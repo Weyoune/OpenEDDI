@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "legacy/graphics.hpp"
+#include "legacy/exe_profile.hpp"
 #include "editor/world.hpp"
 #include "formats/executable_layout.hpp"
 #include "formats/le.hpp"
@@ -350,6 +351,10 @@ void Graphics::capture(World &world) {
     }
   }
   std::map<std::string, Json> resources;
+  std::set<std::string> refresh_projection_keys;
+  const auto german_source = find(root_, "BMH.EXE");
+  const bool regional_crests = str(world.manifest, "provenance") != "import:fltd" &&
+      !german_source.empty() && has_regional_crest_routing(read_file(german_source));
   if (world.store->contains("assets/classic/resources.json")) {
     const auto index =
         Json::parse(world.store->read("assets/classic/resources.json"));
@@ -375,13 +380,21 @@ void Graphics::capture(World &world) {
     slot.palette = whole ? files_.at(f->second).palette : palette_;
     slot.baseline = extract(image, slot.start, w, h);
     slot.pixels = str(resource->second, "pixels");
+    slot.png = world.asset_file(key);
+    if (refresh_projection_keys.contains(key)) {
+      // The upstream import projection assumes the original fallback routing.
+      // Refresh both cached representations before remembering our baseline.
+      const auto png = images::encode_png(raster(slot.baseline, w, h, slot.palette, transparent));
+      world.store->set(slot.pixels, std::make_shared<const std::string>(
+          reinterpret_cast<const char *>(slot.baseline.data()), slot.baseline.size()));
+      world.store->set(slot.png, std::make_shared<const std::string>(png));
+    }
     const auto imported = world.store->read(slot.pixels);
     if (imported.size() != slot.baseline.size() ||
         !std::equal(slot.baseline.begin(), slot.baseline.end(),
                     imported.begin(),
                     [](uint8_t a, char b) { return a == uint8_t(b); }))
       invalid("imported image does not match physical slot");
-    slot.png = world.asset_file(key);
     slot.baseline_png = world.store->read(slot.png);
     slots_[key] = std::move(slot);
   };
@@ -397,7 +410,12 @@ void Graphics::capture(World &world) {
     const int team = legacy.at("team_index").get<int>(),
               selector = legacy.at("badge_word").get<int>() & 511;
     const bool neutral =
-        (team >= 90 && team < 138) || (team >= 168 && team < 357);
+        (!regional_crests && team >= 90 && team < 138) || (team >= 168 && team < 357);
+    if (regional_crests && team >= 90 && team < 138) {
+      if (!names.contains("w/" + std::to_string(selector >> 3)))
+        invalid("regional crest sheet missing");
+      refresh_projection_keys.insert(str(club, "crest"));
+    }
     bind(str(club, "crest"), "crests/" + std::to_string(team),
          neutral ? "kb/0" : "w/" + std::to_string(selector >> 3),
          neutral ? 8 : (selector & 7) * 38, 0, 38, 38, true, false);
