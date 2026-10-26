@@ -1,6 +1,6 @@
 # OpenEDDI
 
-**[OpenEDDI 0.1.0 herunterladen](https://github.com/Weyoune/OpenEDDI/releases/tag/v0.1.0)** · [Screenshots und Prüfung](docs/qa/0.1.0/README.md)
+**[OpenEDDI 0.1.1 herunterladen](https://github.com/Weyoune/OpenEDDI/releases/tag/v0.1.1)** · [Screenshots und Prüfung](docs/qa/0.1.1/README.md)
 
 Ein eigenständiger Editor für die originalen DOS-Grunddaten von **Bundesliga Manager Hattrick** und **Football Limited**. Oberfläche auf SDL2/RmlUI mit drei Themes, Deutsch/Englisch, Rückgängig/Wiederholen, Navigation und lokalem MCP-Server.
 

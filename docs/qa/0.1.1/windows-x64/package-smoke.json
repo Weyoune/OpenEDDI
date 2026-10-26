@@ -1,0 +1,11 @@
+{
+  "platform": "windows-x64",
+  "commit": "98e8509c84d18cefe1a8cca69d8d65dcaacec7ed",
+  "binary_sha256": "963ee770a38a968d76fd632d42e2a5b95d45c40c3a2d6381a7bd197a383e3178",
+  "archive_sha256": "a017b6a81f8d18e837aeca0bb3d89702018c7a60eed93ed03085e85808d09d02",
+  "version": "OpenEDDI 0.1.1",
+  "native_gui_exit": 0,
+  "no_asset_override": true,
+  "unrelated_working_directory": true,
+  "screenshot_sha256": "a4114f1ba7d78748737b1acacf18d143f453476bba59651b7733798f5bc4fac8"
+}

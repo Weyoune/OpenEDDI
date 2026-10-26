@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Darwin-c++"
+	tests="7"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="sjc22-bm213-68bfa069-9fa4-419d-97bc-5400ba30910b-DACD38F2E9C1.local"
+	time="0"
+	timestamp="2026-10-26T20:38:25"
+	>
+	<testcase name="openeddi_legacy" classname="openeddi_legacy" time="0.0267166" status="run">
+		<properties/>
+		<system-out>transaction checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_version" classname="openeddi_version" time="0.0172523" status="run">
+		<properties/>
+		<system-out>OpenEDDI 0.1.1
+</system-out>
+	</testcase>
+	<testcase name="openeddi_data" classname="openeddi_data" time="0.0614413" status="run">
+		<properties/>
+		<system-out>legacy data tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_graphics" classname="openeddi_graphics" time="0.104381" status="run">
+		<properties/>
+		<system-out>graphics tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_transaction_failures" classname="openeddi_transaction_failures" time="0.0753414" status="run">
+		<properties/>
+		<system-out>transaction failure checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_mcp" classname="openeddi_mcp" time="0.0126191" status="run">
+		<properties/>
+		<system-out>MCP legacy protocol passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_display_metrics" classname="openeddi_display_metrics" time="0.005147" status="run">
+		<properties/>
+		<system-out>Display density and pointer mapping passed
+</system-out>
+	</testcase>
+</testsuite>
