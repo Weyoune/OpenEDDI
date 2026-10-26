@@ -21,10 +21,10 @@ with tempfile.TemporaryDirectory() as td:
   assert 'MSVCP140' not in imports and 'VCRUNTIME140' not in imports,'Unexpected redistributable runtime dependency'
  assert hashlib.sha256(binary.read_bytes()).hexdigest()==meta['binary_sha256']
  version=subprocess.run([str(binary),'--version'],cwd=tmp,capture_output=True,text=True,timeout=15)
- assert version.returncode==0 and 'OpenEDDI 0.1.0' in version.stdout
+ assert version.returncode==0 and ('OpenEDDI '+meta['version']) in version.stdout
  options=tmp/'options.json';options.write_text(json.dumps({'language':'en','theme':'silver','mcp_enabled':False}))
  png=a.output.resolve()/'packaged.png'
- cmd=[str(binary),'--demo','--settings',str(options),'--screenshot',str(png),'--quit-after-ms','1200']
+ cmd=[str(binary),'--demo','--ui-smoke','--settings',str(options),'--screenshot',str(png),'--quit-after-ms','1200']
  if a.platform=='linux-x64' and not os.environ.get('DISPLAY'):cmd=['xvfb-run','-a']+cmd
  env=os.environ.copy()
  if a.platform=='windows-x64':env['OPENBMH_RML_DRIVER']='warp'

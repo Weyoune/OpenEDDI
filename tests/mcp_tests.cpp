@@ -17,7 +17,7 @@ int main() {
         {{"jsonrpc", "2.0"}, {"id", 2}, {"method", "tools/list"}});
     bool backups = false, preview = false;
     for (const auto &t : tools["result"]["tools"]) {
-      if (t["name"] == "editor_new")
+      if (t["name"] == "editor_new" || t["name"]=="editor_regulations")
         throw std::runtime_error("unsupported new world advertised");
       if (t["name"] == "editor_backups")
         backups = true;

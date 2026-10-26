@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-only
 #include "editor/ui.hpp"
+#include "editor/display.hpp"
 #include "editor/images.hpp"
 #include "editor/version.hpp"
 #include "launch/rml_path.hpp"
@@ -117,6 +118,7 @@ class EditorUi final : public Rml::EventListener {
     Rml::Context *context_ = nullptr;
     Rml::ElementDocument *doc_ = nullptr;
     bool initialized_ = false, closed_ = false, busy_ = false, modal_ = false;
+    bool shared_image_confirmed_ = false, smoke_prompt_started_ = false, smoke_prompt_confirmed_ = false;
     bool roster24_ = false, show_source_ = false, needs_refresh_ = true, redraw_ = true;
     uint64_t revision_ = uint64_t(-1);
     uint64_t world_generation_ = uint64_t(-1);
@@ -454,8 +456,7 @@ class EditorUi final : public Rml::EventListener {
             return;
         renderer_.SetViewport(pw, ph);
         context_->SetDimensions({pw, ph});
-        context_->SetDensityIndependentPixelRatio(float(pw) / w *
-                                                  std::clamp(std::min(w / 1440.f, h / 900.f), .78f, 1.8f));
+        context_->SetDensityIndependentPixelRatio(DisplayMetrics{w,h,pw,ph}.density());
     }
     void close_modal() {
         redraw_ = true;
@@ -466,6 +467,7 @@ class EditorUi final : public Rml::EventListener {
             image_view_open_ = false;
         }
         modal_ = dragging_ = false;
+        shared_image_confirmed_=false;
         modal_accept_ = {};
     }
     void modal(const std::string &title, const std::string &body, const std::string &accept,
@@ -493,6 +495,11 @@ class EditorUi final : public Rml::EventListener {
             label("modal-error", message);
         else
             modal(t("error"), "<p>" + escaped(message) + "</p>", t("close"), [this] { close_modal(); }, false);
+    }
+    void shared_image_warning() {
+        shared_image_confirmed_=false;
+        label("modal-error",t("shared_image_warning"));
+        html("modal-buttons",button("continue-image-edit",t("continue_edit"))+button("accept-shared-image",t("apply_all_uses"),"primary"));
     }
     void background(const std::string &command, Json args, std::function<void(const Json &)> callback = {}) {
         if (busy_)
@@ -557,7 +564,7 @@ class EditorUi final : public Rml::EventListener {
         std::string nav;
         for (const std::string name :
              {"overview", "nations", "competitions", "clubs", "players", "roster", "comparison",
-              "regulations", "stadiums", "staff", "assets", "review", "changes"})
+              "stadiums", "staff", "assets", "review", "changes"})
             nav += "<button class=\"nav " + std::string(name == page_ ? "selected" : "") +
                    "\" data-action=\"navigate\" data-value=\"" + name + "\">" + icon(name) + "<span>" +
                    escaped(t(name)) + "</span></button>";
@@ -1455,8 +1462,7 @@ class EditorUi final : public Rml::EventListener {
             changes();
         else if (page_ == "comparison")
             comparison();
-        else if (page_ == "regulations")
-            regulations();
+
         else
             records();
         if (page_ == "comparison" && doc_->GetElementById("comparison-x")) {
@@ -1728,7 +1734,7 @@ class EditorUi final : public Rml::EventListener {
             body += "<div class=\"form-field\"><label>"+t("fit")+"</label><select id=\"legacy-fit\"><option value=\"contain\">"+t("fit_contain")+"</option><option value=\"cover\">"+t("fit_cover")+"</option></select></div>"
                     "<div class=\"form-field\"><label>Dithering</label><select id=\"legacy-dither\"><option value=\"false\">"+t("no")+"</option><option value=\"true\">"+t("yes")+"</option></select></div>"
                     "<p id=\"native-description\"></p><img id=\"native-preview\" style=\"width:180dp;height:180dp;\"/>"
-                    "<div class=\"form-field\"><label>"+t("shared_confirm")+"</label><select id=\"legacy-confirm\"><option value=\"false\">"+t("no")+"</option><option value=\"true\">"+t("yes")+"</option></select></div>";
+                    "<p class=\"form-help\">"+t("shared_confirm")+"</p>";
         body += button("image-preview", t("preview")) + button("image-reset", t("reset"), "quiet") +
                 "</div></div><p class=\"form-help\">" + t("crop_hint") + "</p>";
         modal(
@@ -1736,14 +1742,15 @@ class EditorUi final : public Rml::EventListener {
             [this] {
                 image_recipe_ = crop_recipe();
                 Json args{{"key", image_key_}, {"transform", image_recipe_}, {"expected_revision", revision_}};
-                args["confirm_shared"]=doc_->GetElementById("legacy-confirm") && value("legacy-confirm")=="true";
+                args["confirm_shared"]=shared_image_confirmed_;
                 if (!image_file_.empty())
                     args["file"] = image_file_;
                 else
                     args["source_key"] = image_source_key_;
                 if (!image_target_.empty())
                     args["target"] = image_target_;
-                session_.execute(image_file_.empty() ? "asset.edit" : "asset.import", args);
+                try {session_.execute(image_file_.empty() ? "asset.edit" : "asset.import", args);}
+                catch(const Error& e) {if(e.code=="legacy_shared_graphic_confirmation") {shared_image_warning();return;}throw;}
                 close_modal();
                 needs_refresh_ = true;
             },
@@ -1888,6 +1895,14 @@ class EditorUi final : public Rml::EventListener {
         else if (action == "copy-connection") {
             SDL_SetClipboardText(server_.connection(options_).dump(2).c_str());
             label("modal-error", t("copied"));
+        } else if(action=="accept-shared-image") {
+            shared_image_confirmed_=true;
+            auto callback=modal_accept_;
+            try {if(callback)callback();} catch(...) {shared_image_confirmed_=false;throw;}
+            shared_image_confirmed_=false;
+        } else if(action=="continue-image-edit") {
+            shared_image_confirmed_=false;label("modal-error","");
+            html("modal-buttons",button("cancel-modal",t("cancel"))+button("accept-modal",t("apply"),"primary"));
         } else if(action=="backups") {
             auto items=session_.execute("backups.list");std::string body;
             for(const auto& item:items) body+="<p>"+escaped(str(item,"id"))+"</p>"+button("restore-backup",t("restore"),"quiet","data-value=\""+escaped(str(item,"id"))+"\"");
@@ -2118,7 +2133,7 @@ class EditorUi final : public Rml::EventListener {
     EditorUi(Session &s, Options &o, McpServer &server, UiConfig config)
         : session_(s), options_(o), server_(server), config_(std::move(config)), renderer_(s, video_) {
         SDL_StartTextInput();
-        page_ = config_.page;
+        page_ = config_.page=="regulations"?"overview":config_.page;
         Rml::SetSystemInterface(&system_);
         Rml::SetFileInterface(&files_);
         Rml::SetRenderInterface(&renderer_);
@@ -2174,7 +2189,7 @@ class EditorUi final : public Rml::EventListener {
                 pending_.emplace_back("compare-set", "");
             else if (id == "image-aspect")
                 pending_.emplace_back("aspect", "");
-            else if (id.starts_with("image-") && id != "edit-preview")
+            else if ((id.starts_with("image-") && id != "edit-preview") || id.starts_with("crop-") || id=="legacy-fit" || id=="legacy-dither")
                 pending_.emplace_back("image-preview", "");
             return;
         }
@@ -2195,6 +2210,14 @@ class EditorUi final : public Rml::EventListener {
             }
     }
     int run() {
+        if(config_.smoke) {
+            background("demo",{{"discard",true}});
+            SDL_Event event{};event.type=SDL_WINDOWEVENT;event.window.windowID=SDL_GetWindowID(video_.window);
+            event.window.event=SDL_WINDOWEVENT_SIZE_CHANGED;
+            int w,h;SDL_GetWindowSize(video_.window,&w,&h);
+            event.window.data1=w/2;event.window.data2=h/2;
+            SDL_PushEvent(&event);
+        }
         using Clock = std::chrono::steady_clock;
         using namespace std::chrono_literals;
         auto last_poll = start_;
@@ -2230,8 +2253,10 @@ class EditorUi final : public Rml::EventListener {
                     continue;
                 }
                 if (event.type == SDL_WINDOWEVENT && (event.window.event == SDL_WINDOWEVENT_SIZE_CHANGED ||
-                                                      event.window.event == SDL_WINDOWEVENT_DISPLAY_CHANGED))
+                                                      event.window.event == SDL_WINDOWEVENT_DISPLAY_CHANGED)) {
                     resize();
+                    continue;
+                }
                 if (event.type == SDL_KEYDOWN && !event.key.repeat) {
                     const bool command = event.key.keysym.mod & (KMOD_CTRL | KMOD_GUI);
                     if (command && event.key.keysym.sym == SDLK_s) {
@@ -2296,12 +2321,12 @@ class EditorUi final : public Rml::EventListener {
                     video_.drawable_size(pw, ph);
                     if (w && h) {
                         if (event.type == SDL_MOUSEMOTION) {
-                            event.motion.x = int(double(event.motion.x) * pw / w);
-                            event.motion.y = int(double(event.motion.y) * ph / h);
+                            const auto p=DisplayMetrics{w,h,pw,ph}.point(event.motion.x,event.motion.y);
+                            event.motion.x=p.first;event.motion.y=p.second;
                         }
                         if (event.type == SDL_MOUSEBUTTONDOWN || event.type == SDL_MOUSEBUTTONUP) {
-                            event.button.x = int(double(event.button.x) * pw / w);
-                            event.button.y = int(double(event.button.y) * ph / h);
+                            const auto p=DisplayMetrics{w,h,pw,ph}.point(event.button.x,event.button.y);
+                            event.button.x=p.first;event.button.y=p.second;
                             context_->ProcessMouseMove(event.button.x, event.button.y, RmlSDL::GetKeyModifierState());
                         }
                     }
@@ -2319,7 +2344,17 @@ class EditorUi final : public Rml::EventListener {
                             continue;
                         }
                     }
-                    RmlSDL::InputEventHandler(context_, video_.window, event);
+                    // Mouse coordinates were already mapped to framebuffer pixels.
+                    // Do not delegate an already-normalized coordinate contract to backend-specific DPI rules.
+                    if(event.type==SDL_MOUSEMOTION)
+                        context_->ProcessMouseMove(event.motion.x,event.motion.y,RmlSDL::GetKeyModifierState());
+                    else if(event.type==SDL_MOUSEBUTTONDOWN) {
+                        context_->ProcessMouseButtonDown(RmlSDL::ConvertMouseButton(event.button.button),RmlSDL::GetKeyModifierState());
+                        SDL_CaptureMouse(SDL_TRUE);
+                    } else if(event.type==SDL_MOUSEBUTTONUP) {
+                        SDL_CaptureMouse(SDL_FALSE);
+                        context_->ProcessMouseButtonUp(RmlSDL::ConvertMouseButton(event.button.button),RmlSDL::GetKeyModifierState());
+                    } else RmlSDL::InputEventHandler(context_, video_.window, event);
                 }
             }
             while (!pending_.empty()) {
@@ -2334,6 +2369,7 @@ class EditorUi final : public Rml::EventListener {
             }
             if (busy_ && work_.wait_for(std::chrono::seconds(0)) == std::future_status::ready) {
                 busy_ = false;
+                label("status-message", "");
                 try {
                     auto result = work_.get();
                     if (completed_)
@@ -2367,9 +2403,28 @@ class EditorUi final : public Rml::EventListener {
                     error(e);
                 }
             }
+            if(config_.smoke && !busy_ && !smoke_prompt_started_) {
+                smoke_prompt_started_=true;
+                modal("Shared image", "<p>Synthetic shared-image confirmation</p>",t("apply"),[this]{
+                    if(!shared_image_confirmed_)throw Error("ui_confirmation_regression");
+                    smoke_prompt_confirmed_=true;close_modal();
+                });
+                shared_image_warning();context_->Update();
+                auto* button=doc_->QuerySelector("[data-action=accept-shared-image]");
+                if(!button||!button->IsVisible())throw Error("ui_confirmation_regression");
+                auto pos=button->GetAbsoluteOffset();auto size=button->GetBox().GetSize(Rml::BoxArea::Border);
+                context_->ProcessMouseMove(int(pos.x+size.x/2),int(pos.y+size.y/2),0);
+                context_->ProcessMouseButtonDown(0,0);context_->ProcessMouseButtonUp(0,0);
+            }
             auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - start_).count();
             const bool capture = !busy_ && elapsed >= 1200 && !config_.screenshot.empty();
             if (drawable && (redraw_ || now >= next_update || capture)) {
+                // Backing scale can change after ShowWindow or a monitor move
+                // without a logical resize. Keep every drawable consumer aligned.
+                int lw,lh,pw,ph;SDL_GetWindowSize(video_.window,&lw,&lh);video_.drawable_size(pw,ph);
+                const DisplayMetrics metrics{lw,lh,pw,ph};
+                if(metrics.valid() && (context_->GetDimensions()!=Rml::Vector2i(pw,ph) ||
+                   std::abs(context_->GetDensityIndependentPixelRatio()-metrics.density())>1e-5f)) resize();
                 const auto updated = Clock::now();
                 context_->Update();
                 // BeginFrame configures transparent clears for offscreen
@@ -2378,6 +2433,15 @@ class EditorUi final : public Rml::EventListener {
                 renderer_.BeginFrame();
                 context_->Render();
                 renderer_.EndFrame();
+                if(capture && config_.smoke) {
+                    int pw,ph;video_.drawable_size(pw,ph);
+                    if(context_->GetDimensions()!=Rml::Vector2i(pw,ph))throw Error("ui_display_regression");
+                    if(!smoke_prompt_confirmed_)throw Error("ui_confirmation_regression");
+                    int cw,ch;const auto pixels=video_.capture(cw,ch);
+                    const auto at=(size_t(ch*9/10)*cw+cw*9/10)*4;
+                    if(pixels.size()<at+4 || int(pixels[at])+pixels[at+1]+pixels[at+2]<5)throw Error("ui_display_coverage_regression");
+                    if(busy_ || el("status-message")->GetInnerRML()==escaped(t("loading")))throw Error("ui_loading_regression");
+                }
                 if (capture)
                     screenshot();
                 video_.present();

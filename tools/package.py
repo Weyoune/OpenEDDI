@@ -5,7 +5,7 @@ import argparse,hashlib,json,os,shutil,subprocess,tempfile,zipfile
 from pathlib import Path
 p=argparse.ArgumentParser();p.add_argument('--build',type=Path,required=True);p.add_argument('--out',type=Path,required=True);p.add_argument('--platform',required=True);p.add_argument('--source',action='store_true');a=p.parse_args()
 root=Path(__file__).resolve().parents[1];build=a.build.resolve();a.out.mkdir(parents=True,exist_ok=True)
-version='0.1.0';revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
+version=(root/'VERSION').read_text().strip();revision=subprocess.check_output(['git','rev-parse','HEAD'],cwd=root,text=True).strip()
 def digest(f):return hashlib.sha256(f.read_bytes()).hexdigest()
 def archive(folder,name):
  target=a.out/(name+'.zip')

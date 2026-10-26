@@ -35,7 +35,7 @@ jobs:
           if [ "$RUNNER_OS" = macOS ]; then args+=(-DCMAKE_OSX_ARCHITECTURES=arm64 -DCMAKE_OSX_DEPLOYMENT_TARGET=11.0); fi
           cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release "${args[@]}"
       - name: Build
-        run: cmake --build build --target OpenEDDI legacy_tests data_tests graphics_tests transaction_failure_tests mcp_tests --parallel 3
+        run: cmake --build build --target OpenEDDI legacy_tests data_tests graphics_tests transaction_failure_tests mcp_tests display_tests --parallel 3
       - name: Test
         run: ctest --test-dir build -R "^openeddi_" --output-on-failure --output-junit tests.xml
       - name: Native GUI
@@ -46,7 +46,7 @@ jobs:
           echo '{"language":"de","theme":"midnight","mcp_enabled":false}' > build/qa-options.json
           display=()
           if [ "$RUNNER_OS" = Linux ]; then display=(xvfb-run -a); fi
-          "${display[@]}" "$binary" --demo --settings build/qa-options.json --screenshot build/native.png --quit-after-ms 1200
+          "${display[@]}" "$binary" --demo --ui-smoke --settings build/qa-options.json --screenshot build/native.png --quit-after-ms 1200
           test -s build/native.png
       - name: Package
         shell: bash

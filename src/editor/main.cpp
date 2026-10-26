@@ -19,7 +19,7 @@ int main(int argc, char **argv) {
     std::string language = "de";
     bool graphical = true;
     for (int i = 1; i < argc; ++i)
-        if (std::string_view(argv[i]) == "--headless" || std::string_view(argv[i]) == "--serve" ||
+        if (std::string_view(argv[i]) == "--ui-smoke" || std::string_view(argv[i]) == "--headless" || std::string_view(argv[i]) == "--serve" ||
             std::string_view(argv[i]) == "--stdio-mcp" || std::string_view(argv[i]) == "--version" ||
             std::string_view(argv[i]) == "--help")
             graphical = false;
@@ -55,6 +55,7 @@ int main(int argc, char **argv) {
                 script = path(next());
             else if (arg == "--mcp-port")
                 port = std::stoi(next());
+            else if(arg=="--ui-smoke") ui.smoke=true;
             else if (arg == "--demo")
                 demo = true;
             else if (arg == "--new")

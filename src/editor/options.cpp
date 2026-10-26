@@ -571,6 +571,9 @@ std::string tr(const std::string &language, const std::string &key) {
           "unter verwenden.",
           "The source file changed outside the editor. Please use Save as."}}};
     static const std::map<std::string,std::pair<std::string,std::string>> legacy_words{
+        {"shared_image_warning",{"Diese Grafik wird mehrfach verwendet. Änderungen betreffen alle Verwendungen. Übernehmen?","This image is shared. Changes affect every usage. Apply?"}},
+        {"apply_all_uses",{"Für alle Verwendungen übernehmen","Apply to every usage"}},
+        {"continue_edit",{"Weiter bearbeiten","Continue editing"}},
         {"read_only",{"Nur Anzeige","Read only"}},
         {"fit",{"Einpassung","Fitting"}},
         {"strictness",{"Strenge","Strictness"}},
