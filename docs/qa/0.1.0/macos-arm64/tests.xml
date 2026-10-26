@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Darwin-c++"
+	tests="6"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="sat12-bq167-dc810bf4-c099-429e-99d9-5f52c5d88405-0E3BE6127CF3.local"
+	time="0"
+	timestamp="2026-10-26T19:03:57"
+	>
+	<testcase name="openeddi_legacy" classname="openeddi_legacy" time="0.0193544" status="run">
+		<properties/>
+		<system-out>transaction checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_version" classname="openeddi_version" time="0.00932758" status="run">
+		<properties/>
+		<system-out>OpenEDDI 0.1.0
+</system-out>
+	</testcase>
+	<testcase name="openeddi_data" classname="openeddi_data" time="0.0453141" status="run">
+		<properties/>
+		<system-out>legacy data tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_graphics" classname="openeddi_graphics" time="0.0717098" status="run">
+		<properties/>
+		<system-out>graphics tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_transaction_failures" classname="openeddi_transaction_failures" time="0.0637236" status="run">
+		<properties/>
+		<system-out>transaction failure checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_mcp" classname="openeddi_mcp" time="0.0118321" status="run">
+		<properties/>
+		<system-out>MCP legacy protocol passed
+</system-out>
+	</testcase>
+</testsuite>

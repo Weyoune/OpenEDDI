@@ -1,0 +1,47 @@
+{
+  "assets": [
+    {
+      "digest": "sha256:00d10ab72e1da57f4253de86f20347f39b54aa4a8222774e5933d36adea66a73",
+      "name": "OpenEDDI-0.1.0-linux-x64.zip",
+      "size": 5396251
+    },
+    {
+      "digest": "sha256:f649db0cef138c7fc897ce1b3492abe9facd73c20660c8741bcf25d5c8972923",
+      "name": "OpenEDDI-0.1.0-linux-x64.zip.sha256",
+      "size": 95
+    },
+    {
+      "digest": "sha256:1ebb0ded990f98084a8f0db1e26b95ace029c335c9b1b96eed2dd93d1836033b",
+      "name": "OpenEDDI-0.1.0-macos-arm64.zip",
+      "size": 3859850
+    },
+    {
+      "digest": "sha256:42fa55381b8cf5225bae6ba093a5697d7ddc5312af2e808bb085fbcb51548a6a",
+      "name": "OpenEDDI-0.1.0-macos-arm64.zip.sha256",
+      "size": 97
+    },
+    {
+      "digest": "sha256:d31d8e9c049f3947471e0ed37392f86fd6fcdb29f2d5efaeb9debc030caaaa00",
+      "name": "OpenEDDI-0.1.0-source.zip",
+      "size": 60670863
+    },
+    {
+      "digest": "sha256:7a300627bd75b76380c6cc0da11409ec0865260446d32fd71301d48d442b5949",
+      "name": "OpenEDDI-0.1.0-source.zip.sha256",
+      "size": 92
+    },
+    {
+      "digest": "sha256:b79440560751e45a766e8f1317567980e18977efa0db3d8787e0b010dbcfda07",
+      "name": "OpenEDDI-0.1.0-windows-x64.zip",
+      "size": 3377992
+    },
+    {
+      "digest": "sha256:354701cbe7c61041624b13634ce4d8d38b41b7660a5f52747bbe64767c0c635a",
+      "name": "OpenEDDI-0.1.0-windows-x64.zip.sha256",
+      "size": 98
+    }
+  ],
+  "tag_name": "v0.1.0",
+  "target_commitish": "fc2f6af7e4c170218bcc9df5ffcf05a99639a2bc",
+  "uploaded_assets_match_verified_ci_files": true
+}

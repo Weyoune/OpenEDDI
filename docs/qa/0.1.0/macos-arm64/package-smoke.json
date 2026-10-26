@@ -1,0 +1,11 @@
+{
+  "platform": "macos-arm64",
+  "commit": "fc2f6af7e4c170218bcc9df5ffcf05a99639a2bc",
+  "binary_sha256": "36ffef19fbba88cb305af56e4d07c2e41e552d00f44fa780a263dd0874adba01",
+  "archive_sha256": "1ebb0ded990f98084a8f0db1e26b95ace029c335c9b1b96eed2dd93d1836033b",
+  "version": "OpenEDDI 0.1.0",
+  "native_gui_exit": 0,
+  "no_asset_override": true,
+  "unrelated_working_directory": true,
+  "screenshot_sha256": "c3f7d68c08e7dbc4c1e9a56d1aa630f8cc4e1fbebc993f8305ec1345d8999239"
+}

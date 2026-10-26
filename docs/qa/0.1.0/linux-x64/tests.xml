@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="Linux-c++"
+	tests="6"
+	failures="0"
+	disabled="0"
+	skipped="0"
+	hostname="runnervmtai0g"
+	time="0"
+	timestamp="2026-10-26T19:04:07"
+	>
+	<testcase name="openeddi_legacy" classname="openeddi_legacy" time="0.00977864" status="run">
+		<properties/>
+		<system-out>transaction checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_version" classname="openeddi_version" time="0.0111878" status="run">
+		<properties/>
+		<system-out>OpenEDDI 0.1.0
+</system-out>
+	</testcase>
+	<testcase name="openeddi_data" classname="openeddi_data" time="0.0214394" status="run">
+		<properties/>
+		<system-out>legacy data tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_graphics" classname="openeddi_graphics" time="0.0337174" status="run">
+		<properties/>
+		<system-out>graphics tests passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_transaction_failures" classname="openeddi_transaction_failures" time="0.0311135" status="run">
+		<properties/>
+		<system-out>transaction failure checks passed
+</system-out>
+	</testcase>
+	<testcase name="openeddi_mcp" classname="openeddi_mcp" time="0.00218245" status="run">
+		<properties/>
+		<system-out>MCP legacy protocol passed
+</system-out>
+	</testcase>
+</testsuite>

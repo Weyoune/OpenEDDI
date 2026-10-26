@@ -1,11 +1,23 @@
 {
+  "README.md": "e37ef4ce0520dc8b574296fd1bfb6e0e9aa51b6b746c86984e4ee98cbfa8edc0",
   "linux-native-tests.xml": "6eaa98962ad97766e8082bbd3f170e5114a24de96024a0943b073343954dd4ae",
+  "linux-x64/package-smoke.json": "100043d01a805d155a7768a7fe9fb18401ecf8b3484bfeaf0e274757a9264be8",
+  "linux-x64/packaged.png": "c6b9f7c5ec4e445005a664fd835c5a85a6ab520d7372d7259ad59156e975d967",
+  "linux-x64/tests.xml": "11678f986cf4b6090088f159ab71a15e32c361499589b0992b2def58b5bc36fa",
   "local-validation.json": "2c7672925d53a0d6c46957b51e0c88fa5bb2816a80d434fbce32eaef7c1f7cb1",
+  "macos-arm64/package-smoke.json": "1b446f6cfff80e749b5ca37e2adbced2c5be0ec6119faa01ca6d92aeba59976f",
+  "macos-arm64/packaged.png": "c3f7d68c08e7dbc4c1e9a56d1aa630f8cc4e1fbebc993f8305ec1345d8999239",
+  "macos-arm64/tests.xml": "6450370e9814bcb43fd840ae50f9f782f5766accbd9cca564a94ece799e33b24",
   "matchday-de.png": "8e110200d0e5cda7c744bfb36742eecabe458e9e14f61e8fbbd7145ebbbb84c6",
   "matchday-en.png": "c5c41daafe5cc103f47949d76ad78b95c97b2d18f63f07d45b657fcb46447a81",
   "mcp-http-check.json": "49c21d3fc6910e5567a9ff16520e0590bbb8deb75e8ba979189d7f9c716b08ae",
   "midnight-de.png": "ee36d4ed232e8349b9a644b160da3f7dcfd03d37600cbb71de1f15dcc5722556",
   "midnight-en.png": "f74cd6d2aa7a761599513b028ca48bce308116554132e9c36e978ba60e05d114",
+  "package-validation.json": "202f1699fd8d2069c72f84ec6cf0a311a5ffc2304215bf8bb4e09894dd7792c0",
+  "published-release.json": "4011dba3049a673366709e6ee82f0dcd5c869d70261a4c3a6adbe69e6b28c080",
   "silver-de.png": "c34d06a2f945e736b85a7c163387cb7cfa9e5bac0bdcbeef719d13532873b019",
-  "silver-en.png": "018364daff806f397708a5d651f0b9a851f0bbd1f2d838c71a35e017b87827ba"
+  "silver-en.png": "018364daff806f397708a5d651f0b9a851f0bbd1f2d838c71a35e017b87827ba",
+  "windows-x64/package-smoke.json": "414c67b1feba3aab0e5ec8995a117c70ca0d75417f071bf7a3045af6b884dffc",
+  "windows-x64/packaged.png": "00b88c2c233535ea9f93889ae91647fa5bfeef5e6ad7018b4e70f22436ccf214",
+  "windows-x64/tests.xml": "3083764dad94953e16969f7b93a5419f5f739c48cd813524665423829802ec33"
 }

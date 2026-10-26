@@ -1,0 +1,32 @@
+{
+  "source_commit": "fc2f6af7e4c170218bcc9df5ffcf05a99639a2bc",
+  "platforms": [
+    {
+      "platform": "windows-x64",
+      "zip": "OpenEDDI-0.1.0-windows-x64.zip",
+      "zip_sha256": "b79440560751e45a766e8f1317567980e18977efa0db3d8787e0b010dbcfda07",
+      "binary_sha256": "69955116feeef4b3e6be90aa0c8a4001777f0cc8a8859813c4ca6e98e40654c0",
+      "tests": 6,
+      "packaged_gui": "pass",
+      "architecture": "verified"
+    },
+    {
+      "platform": "macos-arm64",
+      "zip": "OpenEDDI-0.1.0-macos-arm64.zip",
+      "zip_sha256": "1ebb0ded990f98084a8f0db1e26b95ace029c335c9b1b96eed2dd93d1836033b",
+      "binary_sha256": "36ffef19fbba88cb305af56e4d07c2e41e552d00f44fa780a263dd0874adba01",
+      "tests": 6,
+      "packaged_gui": "pass",
+      "architecture": "verified"
+    },
+    {
+      "platform": "linux-x64",
+      "zip": "OpenEDDI-0.1.0-linux-x64.zip",
+      "zip_sha256": "00d10ab72e1da57f4253de86f20347f39b54aa4a8222774e5933d36adea66a73",
+      "binary_sha256": "ac9d895575bbe7dc3eaa33b67adec1392f74e3866c8e1bbd91ff9fdba6bc2bbb",
+      "tests": 6,
+      "packaged_gui": "pass",
+      "architecture": "verified"
+    }
+  ]
+}
