@@ -1,0 +1,11 @@
+{
+  "linux-native-tests.xml": "6eaa98962ad97766e8082bbd3f170e5114a24de96024a0943b073343954dd4ae",
+  "local-validation.json": "2c7672925d53a0d6c46957b51e0c88fa5bb2816a80d434fbce32eaef7c1f7cb1",
+  "matchday-de.png": "8e110200d0e5cda7c744bfb36742eecabe458e9e14f61e8fbbd7145ebbbb84c6",
+  "matchday-en.png": "c5c41daafe5cc103f47949d76ad78b95c97b2d18f63f07d45b657fcb46447a81",
+  "mcp-http-check.json": "49c21d3fc6910e5567a9ff16520e0590bbb8deb75e8ba979189d7f9c716b08ae",
+  "midnight-de.png": "ee36d4ed232e8349b9a644b160da3f7dcfd03d37600cbb71de1f15dcc5722556",
+  "midnight-en.png": "f74cd6d2aa7a761599513b028ca48bce308116554132e9c36e978ba60e05d114",
+  "silver-de.png": "c34d06a2f945e736b85a7c163387cb7cfa9e5bac0bdcbeef719d13532873b019",
+  "silver-en.png": "018364daff806f397708a5d651f0b9a851f0bbd1f2d838c71a35e017b87827ba"
+}

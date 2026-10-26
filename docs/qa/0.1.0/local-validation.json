@@ -1,0 +1,23 @@
+{
+  "profiles": [
+    "BMH DOS LE",
+    "FLTD X-32",
+    "Diamond3.6"
+  ],
+  "private_roundtrip": {
+    "names_attributes_referees_stadiums_kits": true,
+    "indexed_logo_import": true,
+    "reopen": true,
+    "no_op_save": true
+  },
+  "original_DOS_EDDI_visible_edit": [
+    "BMH",
+    "Diamond3.6"
+  ],
+  "original_FLTD": "Startup reached options; edited English data not visually inspected",
+  "gui_themes_languages": 6,
+  "embedded_executable_image_slots_verified": 0,
+  "source_CXX_revision": "2de21d3305b4e98d3fdd0eb938c8122a29c84bc3",
+  "local_binary_sha256": "04dd90bb3e8153442701b686091346f628a9f7209304abb69d458a21f1f6195c",
+  "public_artifacts": "Only synthetic demo images and protocol/unit-test results. Original game captures remain private."
+}

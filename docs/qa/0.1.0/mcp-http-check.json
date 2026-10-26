@@ -1,0 +1,33 @@
+{
+  "unauthorized_status": 401,
+  "authorized_status": 200,
+  "foreign_origin_status": 403,
+  "product": "OpenEDDI",
+  "tools": [
+    "editor_info",
+    "editor_open",
+    "editor_list",
+    "editor_compare",
+    "editor_regulations",
+    "editor_get",
+    "editor_apply",
+    "editor_validate",
+    "editor_rules",
+    "editor_history",
+    "editor_save",
+    "editor_undo",
+    "editor_redo",
+    "editor_roster_move",
+    "editor_roster_swap",
+    "editor_roster_order",
+    "editor_review_resolve",
+    "editor_image_import",
+    "editor_image_edit",
+    "editor_image_preview",
+    "editor_image_export",
+    "editor_backups",
+    "editor_restore_backup",
+    "editor_original_preview"
+  ],
+  "server_stopped": true
+}
