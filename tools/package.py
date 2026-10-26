@@ -21,7 +21,8 @@ with tempfile.TemporaryDirectory() as td:
   app=folder/'OpenEDDI.app';dest=app/'Contents/MacOS';dest.mkdir(parents=True)
   (app/'Contents/Info.plist').write_text(f'''<?xml version="1.0"?><!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"><plist version="1.0"><dict><key>CFBundleName</key><string>OpenEDDI</string><key>CFBundleIdentifier</key><string>org.openeddi.editor</string><key>CFBundleExecutable</key><string>OpenEDDI</string><key>CFBundlePackageType</key><string>APPL</string><key>CFBundleShortVersionString</key><string>{version}</string><key>NSHighResolutionCapable</key><true/></dict></plist>''')
  shutil.copy2(binary,dest/binary.name);(dest/binary.name).chmod(0o755)
- shutil.copytree(build/'assets/editor',dest/'assets/editor')
+ asset_dest=(app/'Contents/Resources' if a.platform=='macos-arm64' else dest)
+ shutil.copytree(build/'assets/editor',asset_dest/'assets/editor')
  shutil.copy2(root/'LICENSE',folder/'LICENSE');shutil.copy2(root/'README.md',folder/'README.md')
  upstream=build/'_deps/openbmh-src'
  cache=(build/'CMakeCache.txt').read_text()

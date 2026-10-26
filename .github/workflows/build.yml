@@ -54,6 +54,8 @@ jobs:
           args=()
           if [ "$RUNNER_OS" = Linux ]; then args+=(--source); fi
           python3 tools/package.py --build build --out dist --platform ${{ matrix.platform }} "${args[@]}"
+      - name: Test extracted application package
+        run: python3 tools/package_smoke.py --dist dist --platform ${{ matrix.platform }} --output build/package-check
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: OpenEDDI-${{ matrix.platform }}
@@ -65,3 +67,4 @@ jobs:
           path: |
             build/tests.xml
             build/native.png
+            build/package-check/**
